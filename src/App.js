@@ -1,4 +1,4 @@
-import { getRowIndex, getColumnIndex } from './utils'
+import { getRowIndex, getColumnIndex, getIsCellValidForBoard } from './utils'
 import React, { useState } from 'react'
 import { Cell } from './Cell'
 import { Controls } from './Controls'
@@ -6,28 +6,28 @@ import { Controls } from './Controls'
 const boardString =
   '145327698839654127672918543496185372218473956753296481367542819984761235521839764'
 const regex = /1|2|3|4|5|6|7|8|9/
-const initialCells = boardString.split('').map(c => (regex.test(c) ? +c : null))
+const initialBoard = boardString.split('').map(c => (regex.test(c) ? +c : null))
 
 const App = () => {
   const [activeNumber, setActiveNumber] = useState(null)
   const [activeCell, setActiveCell] = useState(null)
 
-  const [cells, setCells] = useState(initialCells)
-  const updateCells = (value, index) => {
-    setCells(
-      cells.map((cell, cellIndex) => (cellIndex === index ? value : cell)),
+  const [board, setBoard] = useState(initialBoard)
+  const updateBoard = (value, index) => {
+    setBoard(
+      board.map((cell, cellIndex) => (cellIndex === index ? value : cell)),
     )
   }
 
-  const rows = cells.reduce((sum, n, i) => {
+  const rows = board.reduce((sum, n, i) => {
     sum[getRowIndex(i)] = sum[getRowIndex(i)] || []
-    sum[getRowIndex(i)][getColumnIndex(i)] = n === '?' ? null : +n
+    sum[getRowIndex(i)][getColumnIndex(i)] = n
     return sum
   }, [])
 
   return (
     <div>
-      <div style={{ width: 500, margin: '20px auto', border: '2px solid' }}>
+      <div style={{ width: 500, margin: '20px auto' }}>
         {rows.map((row, rowIndex) => (
           <div key={`row-${rowIndex}`} style={{ display: 'flex' }}>
             {row.map((value, i) => {
@@ -41,9 +41,12 @@ const App = () => {
                   isValueSelected={
                     typeof value === 'number' && value === activeNumber
                   }
+                  getIsCellValid={(index, value) =>
+                    getIsCellValidForBoard(board, index, value)
+                  }
                   onClick={() => {
                     if (typeof activeNumber === 'number') {
-                      updateCells(activeNumber, index)
+                      updateBoard(activeNumber, index)
                     } else {
                       setActiveCell(activeCell === index ? null : index)
                     }
@@ -61,7 +64,7 @@ const App = () => {
         setActiveNumber={setActiveNumber}
         onClickValue={value => {
           if (typeof activeCell === 'number') {
-            updateCells(value, activeCell)
+            updateBoard(value, activeCell)
           } else {
             setActiveNumber(activeNumber === value ? null : value)
           }

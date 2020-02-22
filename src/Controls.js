@@ -8,7 +8,7 @@ export const Controls = ({ onClickValue, activeNumber }) => {
     [7, 8, 9],
   ]
   return (
-    <div style={{ border: '2px solid', maxWidth: 200, margin: '0 auto 20px' }}>
+    <div style={{ maxWidth: 200, margin: '0 auto 20px' }}>
       {data.map((row, rowIndex) => (
         <div key={`control-row-${rowIndex}`} style={{ display: 'flex' }}>
           {row.map((value, columnIndex) => (
