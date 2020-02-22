@@ -15,9 +15,9 @@ export const Controls = ({ onClickValue, activeNumber }) => {
             <Cell
               key={`control-cell-${columnIndex}`}
               value={value}
-              index={rowIndex * 3 + columnIndex}
-              size={3}
-              isValueSelected={value === activeNumber}
+              boardIndex={rowIndex * 3 + columnIndex}
+              boardSize={3}
+              isHighlighted={value === activeNumber}
               onClick={onClickValue}
             />
           ))}

@@ -1,30 +1,57 @@
-export const getRowIndex = (i, s = 9) => Math.floor(i / s)
-export const getColumnIndex = (i, s = 9) => i % s
-export const getBoxIndex = (i, s = 9) => {
-  const size = Math.floor(s / 3)
-  const baseValue = Math.ceil((i + 1) / size) - 1
+export const getRowIndex = (boardIndex, boardSize = 9) => {
+  if (typeof boardIndex !== 'number') return null
+
+  return Math.floor(boardIndex / boardSize)
+}
+
+export const getColumnIndex = (boardIndex, boardSize = 9) => {
+  if (typeof boardIndex !== 'number') return null
+
+  return boardIndex % boardSize
+}
+
+export const getBoxIndex = (boardIndex, boardSize = 9) => {
+  if (typeof boardIndex !== 'number') return null
+
+  const boxSize = Math.floor(boardSize / 3)
+  const baseValue = Math.ceil((boardIndex + 1) / boxSize) - 1
   const offset =
-    -size * getRowIndex(i) + Math.floor(i / Math.floor(s * 3)) * size
+    -boxSize * getRowIndex(boardIndex) +
+    Math.floor(boardIndex / Math.floor(boardSize * 3)) * boxSize
   return baseValue + offset
 }
 
-export const getRowForIndex = (board, index) => {
-  if (typeof index !== 'number') return []
-  const rowIndex = getRowIndex(index)
+export const getRowForBoardIndex = (board, boardIndex) => {
+  if (typeof boardIndex !== 'number') return []
+
+  const rowIndex = getRowIndex(boardIndex)
   const startingIndex = rowIndex * 9
   return board.slice(startingIndex, startingIndex + 9)
 }
 
-export const getColumnForIndex = (board, index) => {
-  if (typeof index !== 'number') return []
-  const columnIndex = getColumnIndex(index)
+export const getColumnForBoardIndex = (board, boardIndex) => {
+  if (typeof boardIndex !== 'number') return []
+
+  const columnIndex = getColumnIndex(boardIndex)
   return board.filter((c, i) => getColumnIndex(i) === columnIndex)
 }
 
-export const getBoxForIndex = (board, index) => {
-  if (typeof index !== 'number') return []
-  const houseIndex = getBoxIndex(index)
+export const getBoxForBoardIndex = (board, boardIndex) => {
+  if (typeof boardIndex !== 'number') return []
+
+  const houseIndex = getBoxIndex(boardIndex)
   return board.filter((c, i) => getBoxIndex(i) === houseIndex)
+}
+
+const isHouseValidForValue = (box, value) =>
+  box.filter(v => v === value).length <= 1
+
+export const getIsCellValidForBoard = (board, boardIndex, value) => {
+  return (
+    isHouseValidForValue(getBoxForBoardIndex(board, boardIndex), value) &&
+    isHouseValidForValue(getRowForBoardIndex(board, boardIndex), value) &&
+    isHouseValidForValue(getColumnForBoardIndex(board, boardIndex), value)
+  )
 }
 
 export const logBoardState = (board, activeCell) => {
@@ -32,9 +59,9 @@ export const logBoardState = (board, activeCell) => {
   const activeColumnIndex = getColumnIndex(activeCell)
   const activeHouseIndex = getBoxIndex(activeCell)
 
-  const activeRow = getRowForIndex(board, activeCell).join('')
-  const activeColumn = getColumnForIndex(board, activeCell).join('')
-  const activeHouse = getBoxForIndex(board, activeCell).join('')
+  const activeRow = getRowForBoardIndex(board, activeCell).join('')
+  const activeColumn = getColumnForBoardIndex(board, activeCell).join('')
+  const activeHouse = getBoxForBoardIndex(board, activeCell).join('')
 
   console.log({
     activeCell,
@@ -45,15 +72,4 @@ export const logBoardState = (board, activeCell) => {
     activeColumnIndex,
     activeHouseIndex,
   })
-}
-
-const isHouseValidForValue = (box, value) =>
-  box.filter(v => v === value).length <= 1
-
-export const getIsCellValidForBoard = (board, index, value) => {
-  return (
-    isHouseValidForValue(getBoxForIndex(board, index), value) &&
-    isHouseValidForValue(getRowForIndex(board, index), value) &&
-    isHouseValidForValue(getColumnForIndex(board, index), value)
-  )
 }

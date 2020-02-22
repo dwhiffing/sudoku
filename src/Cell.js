@@ -2,62 +2,55 @@ import React from 'react'
 import { getRowIndex, getColumnIndex } from './utils'
 
 export const Cell = ({
-  isValueSelected,
-  isCellSelected,
+  isHighlighted,
+  isSelected,
   value,
-  index,
-  size = 9,
+  boardIndex,
   onClick,
-  getIsCellValid,
+  boardSize = 9,
+  isValid = true,
 }) => {
-  const width = 100 / size
-  const row = getRowIndex(index, size)
-  const column = getColumnIndex(index, size)
-  const isValid =
-    typeof getIsCellValid !== 'function' || typeof value !== 'number'
-      ? true
-      : getIsCellValid(index, value)
+  const rowIndex = getRowIndex(boardIndex, boardSize)
+  const columnIndex = getColumnIndex(boardIndex, boardSize)
 
-  const borderWidth = 1
-  const isTopRow = row === 0
-  const isLeftColumn = column === 0
-  const isBottomRow = row === size - 1
-  const isRightColumn = column === size - 1
-  const isHouseColumnEdge = size === 9 && column > 0 && column % 3 === 0
-  const isHouseRowEdge = size === 9 && row > 0 && row % 3 === 0
+  let borderBottomWidth = rowIndex === boardSize - 1 ? 2 : 1
+  let borderRightWidth = columnIndex === boardSize - 1 ? 2 : 1
+  let borderLeftWidth = columnIndex === 0 ? 2 : 0
+  let borderTopWidth = rowIndex === 0 ? 2 : 0
 
-  let borderLeftWidth = isLeftColumn ? 2 : 0
-  let borderTopWidth = isTopRow ? 2 : 0
+  if (boardSize === 9) {
+    if (columnIndex > 0 && columnIndex % 3 === 0) {
+      borderLeftWidth += 1
+    }
 
-  if (isHouseColumnEdge) {
-    borderLeftWidth += borderWidth
-  }
-
-  if (isHouseRowEdge) {
-    borderTopWidth += borderWidth
+    if (rowIndex > 0 && rowIndex % 3 === 0) {
+      borderTopWidth += 1
+    }
   }
 
   return (
     <div
-      onClick={() => onClick && onClick(value)}
+      onClick={() => onClick && onClick(boardIndex, value)}
       style={{
-        width: `${width}%`,
+        width: `${100 / boardSize}%`,
         cursor: onClick ? 'pointer' : '',
         userSelect: 'none',
-        paddingBottom: `${width}%`,
+        paddingBottom: `${100 / boardSize}%`,
         position: 'relative',
         borderStyle: 'solid',
-        borderColor: isCellSelected ? 'black' : '#666',
-        fontWeight: isCellSelected ? 'bold' : 'normal',
-        borderBottomWidth: isBottomRow ? 2 : borderWidth,
-        borderRightWidth: isRightColumn ? 2 : borderWidth,
+        borderColor: isSelected ? 'black' : '#666',
+        fontWeight: isSelected ? 'bold' : 'normal',
+        borderBottomWidth,
+        borderRightWidth,
         borderLeftWidth,
         borderTopWidth,
       }}
     >
       {!isValid && <Fill color="red" opacity={0.5} />}
-      {isValid && isValueSelected && <Fill color="yellow" opacity={0.5} />}
-      {isValid && isCellSelected && <Fill color="lightgray" opacity={0.75} />}
+
+      {isValid && isHighlighted && <Fill color="yellow" opacity={0.5} />}
+
+      {isSelected && <Fill color="gray" opacity={0.5} />}
       <Fill
         style={{
           display: 'flex',
