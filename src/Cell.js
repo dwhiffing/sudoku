@@ -9,6 +9,7 @@ export const Cell = ({
   onClick,
   boardSize = 9,
   isValid = true,
+  isGiven,
 }) => {
   const rowIndex = getRowIndex(boardIndex, boardSize)
   const columnIndex = getColumnIndex(boardIndex, boardSize)
@@ -34,7 +35,8 @@ export const Cell = ({
       onClick={() => onClick && onClick(boardIndex, value)}
       style={{
         borderColor: isSelected ? 'black' : '#666',
-        fontWeight: isSelected ? 'bold' : 'normal',
+        fontWeight: isGiven || isSelected ? 'bold' : 'normal',
+        color: isGiven ? 'blue' : 'black',
         borderBottomWidth,
         borderRightWidth,
         borderLeftWidth,

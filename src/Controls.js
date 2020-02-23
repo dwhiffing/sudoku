@@ -7,14 +7,14 @@ const Button = ({ value, onClick }) => (
   </div>
 )
 
-export const Controls = ({ onClickValue, activeNumber }) => {
+export const Controls = ({ onClickValue, activeNumber, onErase }) => {
   const data = [1, 2, 3, 4, 5, 6, 7, 8, 9]
   return (
     <>
       <div className="controls">
-        <Button value="Hint" onClick={onClickValue} />
-        <Button value="Undo" onClick={onClickValue} />
-        <Button value="Redo" onClick={onClickValue} />
+        <Button value="Hint" onClick={() => {}} />
+        <Button value="Undo" onClick={() => {}} />
+        <Button value="Redo" onClick={() => {}} />
       </div>
       <div className="controls-numbers">
         {data.map((value, boardIndex) => (
@@ -29,9 +29,9 @@ export const Controls = ({ onClickValue, activeNumber }) => {
         ))}
       </div>
       <div className="controls">
-        <Button value="Pencil" onClick={onClickValue} />
-        <Button value="Erase" onClick={onClickValue} />
-        <Button value="Game" onClick={onClickValue} />
+        <Button value="Pencil" onClick={() => {}} />
+        <Button value="Erase" onClick={onErase} />
+        <Button value="Game" onClick={() => {}} />
       </div>
     </>
   )
