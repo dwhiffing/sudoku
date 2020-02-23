@@ -1,12 +1,12 @@
-import { getIsCellValidForBoard } from './utils'
 import React, { useState } from 'react'
 import { Cell } from './Cell'
 import { Controls } from './Controls'
+import { getIsCellValidForBoard, generateBoard } from './utils'
 
 const App = () => {
   const [activeNumber, setActiveNumber] = useState(null)
   const [activeCell, setActiveCell] = useState(null)
-  const [board, setBoard] = useState(initialBoard)
+  const [board, setBoard] = useState(generateBoard())
 
   const updateBoard = (value, boardIndex) => {
     setBoard(board.map((n, i) => (i === boardIndex ? value : n)))
@@ -65,11 +65,3 @@ const App = () => {
 }
 
 export default App
-
-const boardString =
-  '145327698839654127672918543496185372218473956753296481367542819984761235521839764'
-
-const regex = /1|2|3|4|5|6|7|8|9/
-const initialBoard = boardString
-  .split('')
-  .map(c => (regex.test(c) ? +c : undefined))
