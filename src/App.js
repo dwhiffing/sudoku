@@ -1,32 +1,16 @@
-import { getRowIndex, getColumnIndex, getIsCellValidForBoard } from './utils'
+import { getIsCellValidForBoard } from './utils'
 import React, { useState } from 'react'
 import { Cell } from './Cell'
 import { Controls } from './Controls'
 
-const boardString =
-  '145327698839654127672918543496185372218473956753296481367542819984761235521839764'
-
-const regex = /1|2|3|4|5|6|7|8|9/
-const initialBoard = boardString
-  .split('')
-  .map(c => (regex.test(c) ? +c : undefined))
-
 const App = () => {
   const [activeNumber, setActiveNumber] = useState(null)
   const [activeCell, setActiveCell] = useState(null)
-
   const [board, setBoard] = useState(initialBoard)
-  const updateBoard = (value, index) => {
-    setBoard(
-      board.map((cell, cellIndex) => (cellIndex === index ? value : cell)),
-    )
-  }
 
-  const rows = board.reduce((sum, n, i) => {
-    sum[getRowIndex(i)] = sum[getRowIndex(i)] || []
-    sum[getRowIndex(i)][getColumnIndex(i)] = n
-    return sum
-  }, [])
+  const updateBoard = (value, boardIndex) => {
+    setBoard(board.map((n, i) => (i === boardIndex ? value : n)))
+  }
 
   const onClickCell = boardIndex => {
     if (typeof activeNumber === 'number') {
@@ -45,36 +29,47 @@ const App = () => {
   }
 
   return (
-    <div>
-      <div style={{ width: 500, margin: '20px auto' }}>
-        {rows.map((row, rowIndex) => (
-          <div key={`row-${rowIndex}`} style={{ display: 'flex' }}>
-            {row.map((value, i) => {
-              const boardIndex = rowIndex * 9 + i
-              return (
-                <Cell
-                  key={`cell-${i}`}
-                  value={value}
-                  boardIndex={boardIndex}
-                  isSelected={activeCell === boardIndex}
-                  isValid={getIsCellValidForBoard(board, boardIndex, value)}
-                  isHighlighted={value === activeNumber}
-                  onClick={onClickCell}
-                />
-              )
-            })}
-          </div>
-        ))}
+    <>
+      <div className="title-container flex-center">
+        <p>Sudoku</p>
       </div>
 
-      <Controls
-        activeCell={activeCell}
-        activeNumber={activeNumber}
-        setActiveNumber={setActiveNumber}
-        onClickValue={onClickControls}
-      />
-    </div>
+      <div className="board-container">
+        <div className="flex-1">
+          <div className="board">
+            {board.map((value, boardIndex) => (
+              <Cell
+                key={`cell-${boardIndex}`}
+                value={value}
+                onClick={onClickCell}
+                boardIndex={boardIndex}
+                isSelected={activeCell === boardIndex}
+                isHighlighted={value === activeNumber}
+                isValid={getIsCellValidForBoard(board, boardIndex, value)}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="controls-container">
+        <Controls
+          activeCell={activeCell}
+          activeNumber={activeNumber}
+          setActiveNumber={setActiveNumber}
+          onClickValue={onClickControls}
+        />
+      </div>
+    </>
   )
 }
 
 export default App
+
+const boardString =
+  '145327698839654127672918543496185372218473956753296481367542819984761235521839764'
+
+const regex = /1|2|3|4|5|6|7|8|9/
+const initialBoard = boardString
+  .split('')
+  .map(c => (regex.test(c) ? +c : undefined))

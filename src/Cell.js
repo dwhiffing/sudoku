@@ -30,14 +30,9 @@ export const Cell = ({
 
   return (
     <div
+      className={`cell`}
       onClick={() => onClick && onClick(boardIndex, value)}
       style={{
-        width: `${100 / boardSize}%`,
-        cursor: onClick ? 'pointer' : '',
-        userSelect: 'none',
-        paddingBottom: `${100 / boardSize}%`,
-        position: 'relative',
-        borderStyle: 'solid',
         borderColor: isSelected ? 'black' : '#666',
         fontWeight: isSelected ? 'bold' : 'normal',
         borderBottomWidth,
@@ -46,12 +41,14 @@ export const Cell = ({
         borderTopWidth,
       }}
     >
-      {!isValid && <Fill color="red" opacity={0.5} />}
+      <Fill active={!isValid} color="red" opacity={0.5} />
 
-      {isValid && isHighlighted && <Fill color="yellow" opacity={0.5} />}
+      <Fill active={isValid && isHighlighted} color="yellow" opacity={0.5} />
 
-      {isSelected && <Fill color="gray" opacity={0.5} />}
+      <Fill active={isSelected} color="gray" opacity={0.5} />
+
       <Fill
+        active
         style={{
           display: 'flex',
           justifyContent: 'center',
@@ -64,7 +61,7 @@ export const Cell = ({
   )
 }
 
-const Fill = ({ children, color, opacity = 1, style = {} }) => (
+const Fill = ({ active, children, color, opacity = 1, style = {} }) => (
   <div
     style={{
       position: 'absolute',
@@ -73,7 +70,7 @@ const Fill = ({ children, color, opacity = 1, style = {} }) => (
       bottom: 0,
       left: 0,
       opacity,
-      backgroundColor: color,
+      backgroundColor: active ? color : 'transparent',
       ...style,
     }}
   >
