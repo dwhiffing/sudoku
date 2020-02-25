@@ -1,4 +1,5 @@
 import React from 'react'
+import KeyboardEventHandler from 'react-keyboard-event-handler'
 import { Cell } from './Cell'
 
 const Button = ({ value, onClick }) => (
@@ -9,8 +10,19 @@ const Button = ({ value, onClick }) => (
 
 export const Controls = ({ onClickValue, activeNumber, onErase }) => {
   const data = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+  const otherKeys = ['q', 'w', 'e', 'a', 's', 'd', 'z', 'x', 'c']
   return (
     <>
+      <KeyboardEventHandler
+        handleKeys={data.map(d => d.toString()).concat(otherKeys)}
+        onKeyEvent={(key, e) => {
+          if (otherKeys.includes(key)) {
+            onClickValue(null, otherKeys.indexOf(key) + 1)
+          } else {
+            onClickValue(null, +key)
+          }
+        }}
+      />
       <div className="controls">
         <Button value="Hint" onClick={() => {}} />
         <Button value="Undo" onClick={() => {}} />
