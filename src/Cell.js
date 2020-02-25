@@ -1,5 +1,5 @@
 import React from 'react'
-import { getRowIndex, getColumnIndex } from './utils'
+import { getRowIndex, getColumnIndex, getBoxIndex } from './utils'
 
 export const Cell = ({
   isHighlighted,
@@ -7,12 +7,28 @@ export const Cell = ({
   value,
   boardIndex,
   onClick,
+  hoverCell,
+  onMouseEnter,
+  activeCell,
   boardSize = 9,
   isValid = true,
   isGiven,
 }) => {
   const rowIndex = getRowIndex(boardIndex, boardSize)
   const columnIndex = getColumnIndex(boardIndex, boardSize)
+  const boxIndex = getBoxIndex(boardIndex, boardSize)
+  const isRowHover =
+    rowIndex > 0 && getRowIndex(hoverCell, boardSize) === rowIndex
+  const isColumnHover =
+    columnIndex > 0 && getColumnIndex(hoverCell, boardSize) === columnIndex
+  const isBoxHover =
+    boxIndex > 0 && getBoxIndex(hoverCell, boardSize) === boxIndex
+  const isRowActive =
+    rowIndex > 0 && getRowIndex(activeCell, boardSize) === rowIndex
+  const isColumnActive =
+    columnIndex > 0 && getColumnIndex(activeCell, boardSize) === columnIndex
+  const isBoxActive =
+    boxIndex > 0 && getBoxIndex(activeCell, boardSize) === boxIndex
 
   let borderBottomWidth = rowIndex === boardSize - 1 ? 2 : 1
   let borderRightWidth = columnIndex === boardSize - 1 ? 2 : 1
@@ -29,10 +45,19 @@ export const Cell = ({
     }
   }
 
+  const isHovered = hoverCell === boardIndex
+
+  const houseSelected =
+    isRowActive || isColumnActive || isBoxActive || isSelected
+
+  const houseHovered =
+    !houseSelected && (isRowHover || isColumnHover || isBoxHover)
+
   return (
     <div
       className={`cell`}
       onClick={() => onClick && onClick(boardIndex, value)}
+      onMouseEnter={onMouseEnter}
       style={{
         borderColor: isSelected ? 'black' : '#666',
         fontWeight: isGiven || isSelected ? 'bold' : 'normal',
@@ -47,7 +72,13 @@ export const Cell = ({
 
       <Fill active={isValid && isHighlighted} color="yellow" opacity={0.5} />
 
-      <Fill active={isSelected} color="gray" opacity={0.5} />
+      <Fill active={!isSelected && houseHovered} color="blue" opacity={0.05} />
+
+      <Fill active={!isSelected && isHovered} color="blue" opacity={0.125} />
+
+      <Fill active={!isSelected && houseSelected} color="blue" opacity={0.13} />
+
+      <Fill active={isSelected} color="blue" opacity={0.05} />
 
       <Fill
         active
@@ -55,6 +86,7 @@ export const Cell = ({
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
+          fontSize: 28,
         }}
       >
         {value > 0 ? value : ''}

@@ -6,6 +6,7 @@ import { getIsCellValidForBoard, generateBoard } from './utils'
 const App = () => {
   const [activeNumber, setActiveNumber] = useState(null)
   const [activeCell, setActiveCell] = useState(null)
+  const [hoverCell, setHoverCell] = useState(null)
   const [givens] = useState(generateBoard())
   const [board, setBoard] = useState(givens)
 
@@ -49,9 +50,12 @@ const App = () => {
               <Cell
                 key={`cell-${boardIndex}`}
                 value={value}
+                onMouseEnter={() => setHoverCell(boardIndex)}
                 onClick={onClickCell}
                 boardIndex={boardIndex}
                 isGiven={!!givens[boardIndex]}
+                hoverCell={hoverCell}
+                activeCell={activeCell}
                 isSelected={activeCell === boardIndex}
                 isHighlighted={value === activeNumber}
                 isValid={getIsCellValidForBoard(board, boardIndex, value)}

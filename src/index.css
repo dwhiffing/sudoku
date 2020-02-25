@@ -67,13 +67,9 @@ body {
   font-weight: normal;
 }
 
-.cell:hover {
-  background-color: #ddd;
-}
-
 .cell,
 .cell > * {
-  transition: background-color 250ms;
+  transition: background-color 350ms;
 }
 
 .controls-container {
