@@ -74,7 +74,7 @@ export const Cell = ({
     >
       <Fill active={!isValid} color="red" opacity={0.5} />
 
-      <Fill active={isValid && isHighlighted} color="yellow" opacity={0.5} />
+      <Fill active={isValid && isHighlighted} color="blue" opacity={0.2} />
 
       <Fill active={!isSelected && houseHovered} color="blue" opacity={0.05} />
 
