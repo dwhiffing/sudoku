@@ -105,3 +105,21 @@ body {
 .controls .button:nth-child(2) {
   margin: 10px 0;
 }
+
+.pencil {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 11px;
+}
+
+.pencil div {
+  width: 33%;
+  text-align: center;
+  font-weight: normal;
+}
+
+.button {
+  transition: background-color 300ms;
+}

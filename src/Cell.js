@@ -1,6 +1,7 @@
 import React from 'react'
 import { getRowIndex, getColumnIndex, getBoxIndex } from './utils'
 
+const NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 export const Cell = ({
   isHighlighted,
   isSelected,
@@ -10,6 +11,7 @@ export const Cell = ({
   hoverCell,
   onMouseEnter,
   activeCell,
+  activePencil = [],
   boardSize = 9,
   isValid = true,
   isGiven,
@@ -91,12 +93,25 @@ export const Cell = ({
       >
         {value > 0 ? value : ''}
       </Fill>
+
+      <Fill className="pencil" style={{}}>
+        {value === 0 &&
+          NUMBERS.map(n => (activePencil.includes(n) ? <div>{n}</div> : null))}
+      </Fill>
     </div>
   )
 }
 
-const Fill = ({ active, children, color, opacity = 1, style = {} }) => (
+const Fill = ({
+  className,
+  active,
+  children,
+  color,
+  opacity = 1,
+  style = {},
+}) => (
   <div
+    className={className}
     style={{
       position: 'absolute',
       top: 0,

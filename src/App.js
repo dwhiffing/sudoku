@@ -8,7 +8,27 @@ const App = () => {
   const [activeCell, setActiveCell] = useState(null)
   const [hoverCell, setHoverCell] = useState(null)
   const [givens] = useState(generateBoard())
+  const [usePencil, setUsePencil] = useState(false)
+  const [pencilState, setPencilState] = useState(new Array(81).fill([]))
   const [board, setBoard] = useState(givens)
+
+  const updatePencil = (value, boardIndex) => {
+    if (!!givens[boardIndex] || !!board[boardIndex]) {
+      return
+    }
+    setPencilState(
+      pencilState.map((n, i) => {
+        if (i === boardIndex) {
+          if (n.includes(value)) {
+            return n.filter(v => v !== value)
+          } else {
+            return n.concat([value])
+          }
+        }
+        return n
+      }),
+    )
+  }
 
   const updateBoard = (value, boardIndex) => {
     if (!!givens[boardIndex]) {
@@ -23,7 +43,11 @@ const App = () => {
 
   const onClickCell = boardIndex => {
     if (!!activeNumber) {
-      updateBoard(activeNumber, boardIndex)
+      if (usePencil) {
+        updatePencil(activeNumber, boardIndex)
+      } else {
+        updateBoard(activeNumber, boardIndex)
+      }
     } else {
       setActiveCell(activeCell === boardIndex ? null : boardIndex)
     }
@@ -31,7 +55,11 @@ const App = () => {
 
   const onClickControls = (boardIndex, value) => {
     if (!!activeCell) {
-      updateBoard(value, activeCell)
+      if (usePencil) {
+        updatePencil(value, activeCell)
+      } else {
+        updateBoard(value, activeCell)
+      }
     } else {
       setActiveNumber(activeNumber === value ? null : value)
     }
@@ -53,6 +81,7 @@ const App = () => {
                 onMouseEnter={() => setHoverCell(boardIndex)}
                 onClick={onClickCell}
                 boardIndex={boardIndex}
+                activePencil={pencilState[boardIndex]}
                 isGiven={!!givens[boardIndex]}
                 hoverCell={hoverCell}
                 activeCell={activeCell}
@@ -70,7 +99,9 @@ const App = () => {
           activeCell={activeCell}
           activeNumber={activeNumber}
           setActiveNumber={setActiveNumber}
+          usePencil={usePencil}
           onClickValue={onClickControls}
+          onClickPencil={() => setUsePencil(!usePencil)}
           onErase={boardIndex => updateBoard(0, activeCell)}
         />
       </div>
