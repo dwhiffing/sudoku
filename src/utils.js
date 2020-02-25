@@ -3,20 +3,14 @@ import chunk from 'lodash/chunk'
 import zip from 'lodash/zip'
 
 export const getRowIndex = (boardIndex, boardSize = 9) => {
-  if (typeof boardIndex !== 'number') return null
-
   return Math.floor(boardIndex / boardSize)
 }
 
 export const getColumnIndex = (boardIndex, boardSize = 9) => {
-  if (typeof boardIndex !== 'number') return null
-
   return boardIndex % boardSize
 }
 
 export const getBoxIndex = (boardIndex, boardSize = 9) => {
-  if (typeof boardIndex !== 'number') return null
-
   const boxSize = Math.floor(boardSize / 3)
   const baseValue = Math.ceil((boardIndex + 1) / boxSize) - 1
   const offset =
@@ -26,7 +20,7 @@ export const getBoxIndex = (boardIndex, boardSize = 9) => {
 }
 
 export const getRowByBoardIndex = (board, boardIndex) => {
-  if (typeof boardIndex !== 'number') return []
+  if (!boardIndex) return []
 
   const rowIndex = getRowIndex(boardIndex)
   const startingIndex = rowIndex * 9
@@ -34,21 +28,21 @@ export const getRowByBoardIndex = (board, boardIndex) => {
 }
 
 export const getColumnByBoardIndex = (board, boardIndex) => {
-  if (typeof boardIndex !== 'number') return []
+  if (!boardIndex) return []
 
   const columnIndex = getColumnIndex(boardIndex)
   return board.filter((c, i) => getColumnIndex(i) === columnIndex)
 }
 
 export const getBoxByBoardIndex = (board, boardIndex) => {
-  if (typeof boardIndex !== 'number') return []
+  if (!boardIndex) return []
 
   const houseIndex = getBoxIndex(boardIndex)
   return board.filter((c, i) => getBoxIndex(i) === houseIndex)
 }
 
 const isHouseValidForValue = (house, value, isIncoming = false) => {
-  if (typeof value !== 'number') {
+  if (!value) {
     return !isIncoming
   }
   return house.filter(c => c === value).length <= (isIncoming ? 0 : 1)
@@ -84,15 +78,10 @@ export const generateBoard = ({ numGivens = 30 } = {}) => {
 
   const numNulls = 81 - numGivens
   const nulls = shuffle([
-    ...new Array(numNulls).fill(false),
+    ...new Array(numNulls).fill(0),
     ...new Array(numGivens).fill(true),
   ])
-  board = board.map((cell, i) => (nulls[i] ? cell : false)).flat()
-
-  console.log({
-    isValid: checkIsValid(board),
-    isSolvable: solvePuzzle([...board]),
-  })
+  board = board.map((cell, i) => (nulls[i] ? cell : 0)).flat()
 
   return board
 }
@@ -119,24 +108,46 @@ export const logBoardState = (board, activeCell) => {
   })
 }
 
-const checkIsValid = board =>
+export const checkIsValid = board =>
   board.every((cell, index) => getIsCellValidForBoard(board, index, cell))
 
-const solvePuzzle = board => {
-  for (let i = 0; i < 81; i++) {
-    if (typeof board[i] !== 'number') {
-      for (let n = 1; n <= 9; n++) {
-        if (getIsCellValidForBoard(board, i, n, { isIncoming: true })) {
-          board[i] = n
-          if (solvePuzzle(board)) {
-            return true
-          } else {
-            board[i] = false
-          }
+export function solvePuzzle(board) {
+  function check_candidate(num, row, col) {
+    for (var i = 0; i < 9; i++) {
+      var b_index =
+        (Math.floor(row / 3) * 3 + Math.floor(i / 3)) * 9 +
+        Math.floor(col / 3) * 3 +
+        (i % 3)
+      if (
+        num === board[row * 9 + i] ||
+        num === board[col + i * 9] ||
+        num === board[b_index]
+      ) {
+        return false
+      }
+    }
+    return true
+  }
+
+  function get_candidate(index) {
+    if (index >= board.length) {
+      return true
+    } else if (board[index] !== 0) {
+      return get_candidate(index + 1)
+    }
+
+    for (var i = 1; i <= 9; i++) {
+      if (check_candidate(i, Math.floor(index / 9), index % 9)) {
+        board[index] = i
+        if (get_candidate(index + 1)) {
+          return true
         }
       }
-      return false
     }
+
+    board[index] = 0
+    return false
   }
-  return true
+
+  return !get_candidate(0) ? false : board
 }

@@ -57,7 +57,7 @@ export const Cell = ({
           alignItems: 'center',
         }}
       >
-        {value}
+        {value > 0 ? value : ''}
       </Fill>
     </div>
   )

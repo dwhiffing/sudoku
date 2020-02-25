@@ -10,18 +10,18 @@ const App = () => {
   const [board, setBoard] = useState(givens)
 
   const updateBoard = (value, boardIndex) => {
-    if (typeof givens[boardIndex] === 'number') {
+    if (!!givens[boardIndex]) {
       return
     }
     setBoard(
       board.map((n, i) =>
-        i === boardIndex ? (board[boardIndex] === value ? false : value) : n,
+        i === boardIndex ? (board[boardIndex] === value ? 0 : value) : n,
       ),
     )
   }
 
   const onClickCell = boardIndex => {
-    if (typeof activeNumber === 'number') {
+    if (!!activeNumber) {
       updateBoard(activeNumber, boardIndex)
     } else {
       setActiveCell(activeCell === boardIndex ? null : boardIndex)
@@ -29,7 +29,7 @@ const App = () => {
   }
 
   const onClickControls = (boardIndex, value) => {
-    if (typeof activeCell === 'number') {
+    if (!!activeCell) {
       updateBoard(value, activeCell)
     } else {
       setActiveNumber(activeNumber === value ? null : value)
@@ -51,7 +51,7 @@ const App = () => {
                 value={value}
                 onClick={onClickCell}
                 boardIndex={boardIndex}
-                isGiven={typeof givens[boardIndex] === 'number'}
+                isGiven={!!givens[boardIndex]}
                 isSelected={activeCell === boardIndex}
                 isHighlighted={value === activeNumber}
                 isValid={getIsCellValidForBoard(board, boardIndex, value)}
@@ -67,7 +67,7 @@ const App = () => {
           activeNumber={activeNumber}
           setActiveNumber={setActiveNumber}
           onClickValue={onClickControls}
-          onErase={boardIndex => updateBoard(false, activeCell)}
+          onErase={boardIndex => updateBoard(0, activeCell)}
         />
       </div>
     </>
