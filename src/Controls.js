@@ -10,6 +10,7 @@ const Button = ({ style, value, onClick }) => (
 
 export const Controls = ({
   onClickPencil,
+  onClickGame,
   onClickValue,
   activeNumber,
   onErase,
@@ -53,7 +54,7 @@ export const Controls = ({
           onClick={onClickPencil}
         />
         <Button value="Erase" onClick={onErase} />
-        <Button value="Game" onClick={() => {}} />
+        <Button value="Game" onClick={onClickGame} />
       </div>
     </>
   )

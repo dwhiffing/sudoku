@@ -10,6 +10,7 @@ export const Cell = ({
   onClick,
   hoverCell,
   onMouseEnter,
+  onMouseLeave,
   activeCell,
   activePencil = [],
   boardSize = 9,
@@ -60,6 +61,7 @@ export const Cell = ({
       className={`cell`}
       onClick={() => onClick && onClick(boardIndex, value)}
       onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       style={{
         borderColor: isSelected ? 'black' : '#666',
         fontWeight: isGiven || isSelected ? 'bold' : 'normal',

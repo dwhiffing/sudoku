@@ -7,9 +7,9 @@ const App = () => {
   const [activeNumber, setActiveNumber] = useState(null)
   const [activeCell, setActiveCell] = useState(null)
   const [hoverCell, setHoverCell] = useState(null)
-  const [givens] = useState(generateBoard())
   const [usePencil, setUsePencil] = useState(false)
   const [pencilState, setPencilState] = useState(new Array(81).fill([]))
+  const [givens, setGivens] = useState(generateBoard())
   const [board, setBoard] = useState(givens)
 
   const updatePencil = (value, boardIndex) => {
@@ -79,6 +79,7 @@ const App = () => {
                 key={`cell-${boardIndex}`}
                 value={value}
                 onMouseEnter={() => setHoverCell(boardIndex)}
+                onMouseLeave={() => setHoverCell(null)}
                 onClick={onClickCell}
                 boardIndex={boardIndex}
                 activePencil={pencilState[boardIndex]}
@@ -102,6 +103,15 @@ const App = () => {
           usePencil={usePencil}
           onClickValue={onClickControls}
           onClickPencil={() => setUsePencil(!usePencil)}
+          onClickGame={() => {
+            const givens = generateBoard()
+            setGivens(givens)
+            setBoard(givens)
+            setPencilState(new Array(81).fill([]))
+            setUsePencil(false)
+            setActiveNumber(null)
+            setActiveCell(null)
+          }}
           onErase={boardIndex => updateBoard(0, activeCell)}
         />
       </div>
