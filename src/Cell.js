@@ -3,7 +3,7 @@ import { getRowIndex, getColumnIndex, getBoxIndex } from './utils'
 
 const NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 export const Cell = ({
-  isHighlighted,
+  activeNumber,
   isSelected,
   value,
   boardIndex,
@@ -49,6 +49,8 @@ export const Cell = ({
   }
 
   const isHovered = hoverCell === boardIndex
+  const isHighlighted =
+    activeNumber === value || activePencil.includes(activeNumber)
 
   const houseSelected =
     isRowActive || isColumnActive || isBoxActive || isSelected

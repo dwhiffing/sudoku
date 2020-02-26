@@ -87,7 +87,7 @@ const App = () => {
                 hoverCell={hoverCell}
                 activeCell={activeCell}
                 isSelected={activeCell === boardIndex}
-                isHighlighted={value === activeNumber}
+                activeNumber={activeNumber}
                 isValid={getIsCellValidForBoard(board, boardIndex, value)}
               />
             ))}
