@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Cell } from './Cell'
 import { Controls } from './Controls'
 import { getIsCellValidForBoard, generateBoard } from './utils'
+import useUndo from 'use-undo'
 
 const App = () => {
   const [activeNumber, setActiveNumber] = useState(null)
@@ -10,7 +11,18 @@ const App = () => {
   const [usePencil, setUsePencil] = useState(false)
   const [pencilState, setPencilState] = useState(new Array(81).fill([]))
   const [givens, setGivens] = useState(generateBoard())
-  const [board, setBoard] = useState(givens)
+  const [
+    boardState,
+    {
+      set: setBoard,
+      undo: undoBoard,
+      redo: redoBoard,
+      canUndo: canUndoBoard,
+      canRedo: canRedoBoard,
+    },
+  ] = useUndo(givens)
+
+  const board = boardState.present
 
   const updatePencil = (value, boardIndex) => {
     if (!!givens[boardIndex] || !!board[boardIndex]) {
@@ -64,7 +76,6 @@ const App = () => {
       setActiveNumber(activeNumber === value ? null : value)
     }
   }
-
   return (
     <>
       <div className="title-container flex-center">
@@ -99,8 +110,13 @@ const App = () => {
         <Controls
           activeCell={activeCell}
           activeNumber={activeNumber}
+          setActiveCell={setActiveCell}
           setActiveNumber={setActiveNumber}
           usePencil={usePencil}
+          undoBoard={undoBoard}
+          redoBoard={redoBoard}
+          canUndoBoard={canUndoBoard}
+          canRedoBoard={canRedoBoard}
           onClickValue={onClickControls}
           onClickPencil={() => setUsePencil(!usePencil)}
           onClickGame={() => {

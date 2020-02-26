@@ -13,6 +13,10 @@ export const Controls = ({
   onClickGame,
   onClickValue,
   activeNumber,
+  undoBoard,
+  canUndoBoard,
+  redoBoard,
+  canRedoBoard,
   onErase,
   usePencil,
 }) => {
@@ -32,8 +36,8 @@ export const Controls = ({
       />
       <div className="controls">
         <Button value="Hint" onClick={() => {}} />
-        <Button value="Undo" onClick={() => {}} />
-        <Button value="Redo" onClick={() => {}} />
+        <Button value="Undo" onClick={undoBoard} />
+        <Button value="Redo" onClick={redoBoard} />
       </div>
       <div className="controls-numbers">
         {data.map((value, boardIndex) => (
