@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useMemo } from 'react'
 import { Cell } from './Cell'
 import { Controls } from './Controls'
 import { getIsCellValidForBoard, generateBoard } from './utils'
 import useUndo from 'use-undo'
+import sample from 'lodash/sample'
 
 const App = () => {
   const [activeNumber, setActiveNumber] = useState(null)
@@ -10,7 +11,8 @@ const App = () => {
   const [hoverCell, setHoverCell] = useState(null)
   const [usePencil, setUsePencil] = useState(false)
   const [pencilState, setPencilState] = useState(new Array(81).fill([]))
-  const [givens, setGivens] = useState(generateBoard())
+  const [boardGivens, solvedBoard] = useMemo(generateBoard, [])
+  const [givens, setGivens] = useState(boardGivens)
   const [
     boardState,
     {
@@ -76,6 +78,26 @@ const App = () => {
       setActiveNumber(activeNumber === value ? null : value)
     }
   }
+
+  const onHint = () => {
+    const [_, value, index] = sample(
+      board
+        .map((cell, index) => [cell, solvedBoard[index], index])
+        .filter(([cell]) => cell === 0),
+    )
+    updateBoard(value, index)
+  }
+
+  const onReset = () => {
+    const givens = generateBoard()
+    setGivens(givens)
+    setBoard(givens)
+    setPencilState(new Array(81).fill([]))
+    setUsePencil(false)
+    setActiveNumber(null)
+    setActiveCell(null)
+  }
+
   return (
     <>
       <div className="title-container flex-center">
@@ -109,6 +131,7 @@ const App = () => {
       <div className="controls-container">
         <Controls
           activeCell={activeCell}
+          board={board}
           activeNumber={activeNumber}
           setActiveCell={setActiveCell}
           setActiveNumber={setActiveNumber}
@@ -119,15 +142,8 @@ const App = () => {
           canRedoBoard={canRedoBoard}
           onClickValue={onClickControls}
           onClickPencil={() => setUsePencil(!usePencil)}
-          onClickGame={() => {
-            const givens = generateBoard()
-            setGivens(givens)
-            setBoard(givens)
-            setPencilState(new Array(81).fill([]))
-            setUsePencil(false)
-            setActiveNumber(null)
-            setActiveCell(null)
-          }}
+          onHint={onHint}
+          onClickGame={onReset}
           onErase={boardIndex => updateBoard(0, activeCell)}
         />
       </div>

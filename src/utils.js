@@ -79,11 +79,11 @@ export const generateBoard = ({ numGivens = 30 } = {}) => {
   const numNulls = 81 - numGivens
   const nulls = shuffle([
     ...new Array(numNulls).fill(0),
-    ...new Array(numGivens).fill(true),
+    ...new Array(numGivens).fill(1),
   ])
-  board = board.map((cell, i) => (nulls[i] ? cell : 0)).flat()
+  const givens = board.map((cell, i) => (nulls[i] ? cell : 0)).flat()
 
-  return board
+  return [givens, board]
 }
 
 const shift = (arr, step = 1) => [...arr.slice(step), ...arr.slice(0, step)]
@@ -111,43 +111,26 @@ export const logBoardState = (board, activeCell) => {
 export const checkIsValid = board =>
   board.every((cell, index) => getIsCellValidForBoard(board, index, cell))
 
-export function solvePuzzle(board) {
-  function check_candidate(num, row, col) {
-    for (var i = 0; i < 9; i++) {
-      var b_index =
-        (Math.floor(row / 3) * 3 + Math.floor(i / 3)) * 9 +
-        Math.floor(col / 3) * 3 +
-        (i % 3)
-      if (
-        num === board[row * 9 + i] ||
-        num === board[col + i * 9] ||
-        num === board[b_index]
-      ) {
-        return false
-      }
-    }
+export function getNextCandidateRecursive(board, boardIndex) {
+  if (boardIndex >= board.length) {
     return true
+  } else if (board[boardIndex] !== 0) {
+    return getNextCandidateRecursive(boardIndex + 1)
   }
 
-  function get_candidate(index) {
-    if (index >= board.length) {
-      return true
-    } else if (board[index] !== 0) {
-      return get_candidate(index + 1)
-    }
-
-    for (var i = 1; i <= 9; i++) {
-      if (check_candidate(i, Math.floor(index / 9), index % 9)) {
-        board[index] = i
-        if (get_candidate(index + 1)) {
-          return true
-        }
+  for (var i = 1; i <= 9; i++) {
+    if (getIsCellValidForBoard(board, boardIndex, i)) {
+      board[boardIndex] = i
+      if (getNextCandidateRecursive(boardIndex + 1)) {
+        return true
       }
     }
-
-    board[index] = 0
-    return false
   }
 
-  return !get_candidate(0) ? false : board
+  board[boardIndex] = 0
+  return false
+}
+
+export function solvePuzzle(board) {
+  return !getNextCandidateRecursive(0) ? false : board
 }

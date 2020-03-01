@@ -1,6 +1,7 @@
 import React from 'react'
 import KeyboardEventHandler from 'react-keyboard-event-handler'
 import { Cell } from './Cell'
+import { getSingleCandidate } from './utils'
 
 const Button = ({ style, value, onClick }) => (
   <div className="button" onClick={onClick} style={style}>
@@ -9,11 +10,13 @@ const Button = ({ style, value, onClick }) => (
 )
 
 export const Controls = ({
+  board,
   onClickPencil,
   onClickGame,
   onClickValue,
   activeNumber,
   undoBoard,
+  onHint,
   canUndoBoard,
   redoBoard,
   canRedoBoard,
@@ -35,7 +38,7 @@ export const Controls = ({
         }}
       />
       <div className="controls">
-        <Button value="Hint" onClick={() => {}} />
+        <Button value="Hint" onClick={onHint} />
         <Button value="Undo" onClick={undoBoard} />
         <Button value="Redo" onClick={redoBoard} />
       </div>

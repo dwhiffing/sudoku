@@ -1,0 +1,13 @@
+Multiplayer sudoku
+  idea 1:
+    There are several sudoku boards available
+    players pickup and put down each puzzle trying to get as many numbers as possible
+    each number gets you a point
+    getting a number wrong losses you 10 points
+
+  idea 2:
+    Each player solves the same puzzle
+    when a player completes a house, the opponent is attacked in some fashion:
+      numbers are switched to letters
+      puzzle rotates constantly
+      pencil marks are made invisible
