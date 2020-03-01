@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Cell } from './Cell'
 import { Controls } from './Controls'
 import { useTimer } from './Timer'
@@ -12,7 +12,7 @@ import useUndo from 'use-undo'
 import sample from 'lodash/sample'
 
 const App = () => {
-  const [time, stopTime] = useTimer()
+  const [time, stopTime, resetTime] = useTimer()
   const hasWon = useRef(false)
   const boardRef = useRef(generateBoard())
   const [boardGivens, solvedBoard] = boardRef.current
@@ -89,7 +89,6 @@ const App = () => {
   }
 
   const onClickCell = boardIndex => {
-    console.log(activeNumber)
     if (!!activeNumber) {
       if (usePencil) {
         updatePencil(activeNumber, boardIndex)
@@ -105,7 +104,6 @@ const App = () => {
   }
 
   const onClickControls = (boardIndex, value) => {
-    console.log(activeNumber === value ? null : value)
     if (!!activeCell) {
       if (usePencil) {
         updatePencil(value, activeCell)
@@ -135,7 +133,7 @@ const App = () => {
   const onReset = () => {
     boardRef.current = generateBoard()
     const [boardGivens] = boardRef.current
-
+    resetTime()
     setBoard(boardGivens)
     setState({
       givens: boardGivens,
@@ -197,7 +195,7 @@ const App = () => {
           onClickPencil={() => setState({ ...state, usePencil: !usePencil })}
           onHint={onHint}
           onClickGame={onReset}
-          onErase={boardIndex => updateBoard(0, activeCell)}
+          onErase={() => updateBoard(0, activeCell)}
         />
       </div>
     </>

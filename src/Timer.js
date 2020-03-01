@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 
 export function useTimer() {
-  const [start] = useState(Date.now())
+  const [start, setStart] = useState(Date.now())
   const [seconds, setSeconds] = useState(0)
   const [stopped, setStopped] = useState(false)
   const timer = useRef()
@@ -21,6 +21,11 @@ export function useTimer() {
     seconds,
     () => {
       setStopped(true)
+      clearTimeout(timer.current)
+    },
+    () => {
+      setStopped(false)
+      setStart(Date.now())
       clearTimeout(timer.current)
     },
   ]

@@ -2,8 +2,12 @@ import React from 'react'
 import KeyboardEventHandler from 'react-keyboard-event-handler'
 import { Cell } from './Cell'
 
-const Button = ({ style, value, onClick }) => (
-  <div className="button" onClick={onClick} style={style}>
+const Button = ({ isActive, style = {}, value, onClick }) => (
+  <div
+    className="button"
+    style={{ backgroundColor: isActive ? 'gray' : 'white', ...style }}
+    onClick={onClick}
+  >
     {value}
   </div>
 )
@@ -30,11 +34,14 @@ export const Controls = ({
         handleKeys={data
           .map(d => d.toString())
           .concat(otherKeys)
-          .concat(['h'])}
+          .concat(['h', 'n', 'space'])}
         onKeyEvent={(key, e) => {
           if (key === 'h') {
-            onHint()
-            return
+            return onHint()
+          } else if (key === 'space') {
+            return onClickPencil()
+          } else if (key === 'n') {
+            return onClickGame()
           }
           if (otherKeys.includes(key)) {
             onClickValue(null, otherKeys.indexOf(key) + 1)
@@ -62,6 +69,7 @@ export const Controls = ({
       </div>
       <div className="controls">
         <Button
+          isActive={usePencil}
           style={{ backgroundColor: usePencil ? 'lightgrey' : 'white' }}
           value="Pencil"
           onClick={onClickPencil}
