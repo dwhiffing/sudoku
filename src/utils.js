@@ -140,7 +140,9 @@ export function solvePuzzle(board) {
   return !getNextCandidateRecursive(0) ? false : board
 }
 
-export const formatTime = time =>
-  `${padTime(Math.floor(time / 60))}:${padTime(time % 60)}`
+export const formatTime = time => {
+  time = Math.floor(time / 1000)
+  return `${padTime(Math.floor(time / 60))}:${padTime(time % 60)}`
+}
 
 const padTime = t => t.toString().padStart(2, 0)

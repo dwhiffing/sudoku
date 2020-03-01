@@ -27,8 +27,15 @@ export const Controls = ({
   return (
     <>
       <KeyboardEventHandler
-        handleKeys={data.map(d => d.toString()).concat(otherKeys)}
+        handleKeys={data
+          .map(d => d.toString())
+          .concat(otherKeys)
+          .concat(['h'])}
         onKeyEvent={(key, e) => {
+          if (key === 'h') {
+            onHint()
+            return
+          }
           if (otherKeys.includes(key)) {
             onClickValue(null, otherKeys.indexOf(key) + 1)
           } else {

@@ -1,6 +1,7 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { Cell } from './Cell'
 import { Controls } from './Controls'
+import { useTimer } from './Timer'
 import {
   formatTime,
   checkIsSolved,
@@ -11,14 +12,28 @@ import useUndo from 'use-undo'
 import sample from 'lodash/sample'
 
 const App = () => {
-  const [time, setTime] = useState(0)
-  const [activeNumber, setActiveNumber] = useState(null)
-  const [activeCell, setActiveCell] = useState(null)
-  const [hoverCell, setHoverCell] = useState(null)
-  const [usePencil, setUsePencil] = useState(false)
-  const [pencilState, setPencilState] = useState(new Array(81).fill([]))
-  const [boardGivens, solvedBoard] = useMemo(generateBoard, [])
-  const [givens, setGivens] = useState(boardGivens)
+  const [time, stopTime] = useTimer()
+  const hasWon = useRef(false)
+  const boardRef = useRef(generateBoard())
+  const [boardGivens, solvedBoard] = boardRef.current
+  const [state, setState] = useState({
+    hasWon: false,
+    activeNumber: null,
+    activeCell: null,
+    hoverCell: null,
+    usePencil: null,
+    pencilState: Array(81).fill([]),
+    givens: boardGivens,
+  })
+  const {
+    activeNumber,
+    activeCell,
+    hoverCell,
+    usePencil,
+    pencilState,
+    givens,
+  } = state
+
   const [
     boardState,
     {
@@ -33,11 +48,12 @@ const App = () => {
   const board = boardState.present
 
   const updatePencil = (value, boardIndex) => {
-    if (!!givens[boardIndex] || !!board[boardIndex]) {
+    if (!!board[boardIndex]) {
       return
     }
-    setPencilState(
-      pencilState.map((n, i) => {
+    setState({
+      ...state,
+      pencilState: pencilState.map((n, i) => {
         if (i === boardIndex) {
           if (n.includes(value)) {
             return n.filter(v => v !== value)
@@ -47,23 +63,19 @@ const App = () => {
         }
         return n
       }),
-    )
+    })
   }
-  const timeout = useRef()
-  useEffect(() => {
-    timeout.current = setTimeout(() => setTime(time + 1), 1000)
-    return () => clearTimeout(timeout.current)
-  }, [time])
 
   useEffect(() => {
     const isSolved = checkIsSolved(board)
-    if (isSolved) {
-      clearTimeout(timeout.current)
+    if (isSolved && !hasWon.current) {
+      stopTime()
+      hasWon.current = true
       setTimeout(() => {
         alert(`You win!! time: ${formatTime(time)}`)
-      }, 500)
+      }, 1000)
     }
-  }, [board, time])
+  }, [board, stopTime, time])
 
   const updateBoard = (value, boardIndex) => {
     if (!!givens[boardIndex]) {
@@ -77,6 +89,7 @@ const App = () => {
   }
 
   const onClickCell = boardIndex => {
+    console.log(activeNumber)
     if (!!activeNumber) {
       if (usePencil) {
         updatePencil(activeNumber, boardIndex)
@@ -84,11 +97,15 @@ const App = () => {
         updateBoard(activeNumber, boardIndex)
       }
     } else {
-      setActiveCell(activeCell === boardIndex ? null : boardIndex)
+      setState({
+        ...state,
+        activeCell: activeCell === boardIndex ? null : boardIndex,
+      })
     }
   }
 
   const onClickControls = (boardIndex, value) => {
+    console.log(activeNumber === value ? null : value)
     if (!!activeCell) {
       if (usePencil) {
         updatePencil(value, activeCell)
@@ -96,7 +113,10 @@ const App = () => {
         updateBoard(value, activeCell)
       }
     } else {
-      setActiveNumber(activeNumber === value ? null : value)
+      setState({
+        ...state,
+        activeNumber: activeNumber === value ? null : value,
+      })
     }
   }
 
@@ -113,13 +133,18 @@ const App = () => {
   }
 
   const onReset = () => {
-    const givens = generateBoard()
-    setGivens(givens)
-    setBoard(givens)
-    setPencilState(new Array(81).fill([]))
-    setUsePencil(false)
-    setActiveNumber(null)
-    setActiveCell(null)
+    boardRef.current = generateBoard()
+    const [boardGivens] = boardRef.current
+
+    setBoard(boardGivens)
+    setState({
+      givens: boardGivens,
+      board: boardGivens,
+      pencilState: new Array(81).fill([]),
+      usePencil: false,
+      activeNumber: null,
+      activeCell: null,
+    })
   }
 
   return (
@@ -137,8 +162,10 @@ const App = () => {
               <Cell
                 key={`cell-${boardIndex}`}
                 value={value}
-                onMouseEnter={() => setHoverCell(boardIndex)}
-                onMouseLeave={() => setHoverCell(null)}
+                onMouseEnter={() =>
+                  setState({ ...state, hoverCell: boardIndex })
+                }
+                onMouseLeave={() => setState({ ...state, hoverCell: null })}
                 onClick={onClickCell}
                 boardIndex={boardIndex}
                 activePencil={pencilState[boardIndex]}
@@ -159,15 +186,15 @@ const App = () => {
           activeCell={activeCell}
           board={board}
           activeNumber={activeNumber}
-          setActiveCell={setActiveCell}
-          setActiveNumber={setActiveNumber}
+          setActiveCell={activeCell => setState({ ...state, activeCell })}
+          setActiveNumber={activeNumber => setState({ ...state, activeNumber })}
           usePencil={usePencil}
           undoBoard={undoBoard}
           redoBoard={redoBoard}
           canUndoBoard={canUndoBoard}
           canRedoBoard={canRedoBoard}
           onClickValue={onClickControls}
-          onClickPencil={() => setUsePencil(!usePencil)}
+          onClickPencil={() => setState({ ...state, usePencil: !usePencil })}
           onHint={onHint}
           onClickGame={onReset}
           onErase={boardIndex => updateBoard(0, activeCell)}

@@ -12,6 +12,7 @@ export const Cell = ({
   onMouseEnter,
   onMouseLeave,
   activeCell,
+  isHighlighted,
   activePencil = [],
   boardSize = 9,
   isValid = true,
@@ -49,8 +50,10 @@ export const Cell = ({
   }
 
   const isHovered = hoverCell === boardIndex
-  const isHighlighted =
-    activeNumber === value || activePencil.includes(activeNumber)
+  isHighlighted =
+    isHighlighted ||
+    activeNumber === value ||
+    activePencil.includes(activeNumber)
 
   const houseSelected =
     isRowActive || isColumnActive || isBoxActive || isSelected
