@@ -111,6 +111,11 @@ export const logBoardState = (board, activeCell) => {
 export const checkIsValid = board =>
   board.every((cell, index) => getIsCellValidForBoard(board, index, cell))
 
+export const checkIsSolved = board =>
+  board.every(
+    (cell, index) => getIsCellValidForBoard(board, index, cell) && cell !== 0,
+  )
+
 export function getNextCandidateRecursive(board, boardIndex) {
   if (boardIndex >= board.length) {
     return true
@@ -134,3 +139,8 @@ export function getNextCandidateRecursive(board, boardIndex) {
 export function solvePuzzle(board) {
   return !getNextCandidateRecursive(0) ? false : board
 }
+
+export const formatTime = time =>
+  `${padTime(Math.floor(time / 60))}:${padTime(time % 60)}`
+
+const padTime = t => t.toString().padStart(2, 0)

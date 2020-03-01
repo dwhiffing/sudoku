@@ -1,7 +1,6 @@
 import React from 'react'
 import KeyboardEventHandler from 'react-keyboard-event-handler'
 import { Cell } from './Cell'
-import { getSingleCandidate } from './utils'
 
 const Button = ({ style, value, onClick }) => (
   <div className="button" onClick={onClick} style={style}>

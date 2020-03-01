@@ -1,11 +1,17 @@
-import React, { useState, useRef, useMemo } from 'react'
+import React, { useState, useMemo, useEffect, useRef } from 'react'
 import { Cell } from './Cell'
 import { Controls } from './Controls'
-import { getIsCellValidForBoard, generateBoard } from './utils'
+import {
+  formatTime,
+  checkIsSolved,
+  getIsCellValidForBoard,
+  generateBoard,
+} from './utils'
 import useUndo from 'use-undo'
 import sample from 'lodash/sample'
 
 const App = () => {
+  const [time, setTime] = useState(0)
   const [activeNumber, setActiveNumber] = useState(null)
   const [activeCell, setActiveCell] = useState(null)
   const [hoverCell, setHoverCell] = useState(null)
@@ -43,6 +49,21 @@ const App = () => {
       }),
     )
   }
+  const timeout = useRef()
+  useEffect(() => {
+    timeout.current = setTimeout(() => setTime(time + 1), 1000)
+    return () => clearTimeout(timeout.current)
+  }, [time])
+
+  useEffect(() => {
+    const isSolved = checkIsSolved(board)
+    if (isSolved) {
+      clearTimeout(timeout.current)
+      setTimeout(() => {
+        alert(`You win!! time: ${formatTime(time)}`)
+      }, 500)
+    }
+  }, [board, time])
 
   const updateBoard = (value, boardIndex) => {
     if (!!givens[boardIndex]) {
@@ -80,7 +101,10 @@ const App = () => {
   }
 
   const onHint = () => {
-    const [_, value, index] = sample(
+    if (board.filter(c => c === 0).length === 0) {
+      return
+    }
+    const [, value, index] = sample(
       board
         .map((cell, index) => [cell, solvedBoard[index], index])
         .filter(([cell]) => cell === 0),
@@ -101,7 +125,9 @@ const App = () => {
   return (
     <>
       <div className="title-container flex-center">
-        <p>Sudoku</p>
+        <p style={{ width: 400, textAlign: 'center' }}>
+          Sudoku - {formatTime(time)}
+        </p>
       </div>
 
       <div className="board-container">
